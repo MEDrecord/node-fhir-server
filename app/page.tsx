@@ -142,16 +142,16 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-700">Dutch ZIB Compliant</span>
             <Link
-              href="/api/fhir/4_0_1/metadata"
+              href="/docs"
               className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
             >
-              View Capability Statement
+              View API Docs
             </Link>
             <Link
-              href="/upload"
+              href="/api/fhir/4_0_1/metadata"
               className="rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50"
             >
-              Upload Test Data
+              Capability Statement
             </Link>
           </div>
         </div>
@@ -271,9 +271,20 @@ export default function Home() {
 
         {/* Quick Start */}
         <section>
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">Quick Start</h2>
-            <p className="mt-1 text-slate-600">Try these example requests</p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Quick Start</h2>
+              <p className="mt-1 text-slate-600">Try these example requests</p>
+            </div>
+            <Link
+              href="/docs"
+              className="flex items-center gap-2 text-sm font-medium text-teal-600 hover:text-teal-700"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Interactive API Docs
+            </Link>
           </div>
           <Card className="p-6 space-y-6">
             <div>
