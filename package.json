@@ -57,5 +57,9 @@
   },
   "workspaces": [
     "./packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
+    "next": "^16.1.6"
+  }
 }
