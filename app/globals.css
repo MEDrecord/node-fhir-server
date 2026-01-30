@@ -1,37 +1,33 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* MEDrecord Brand Colors */
-  --color-medrecord-50: #f0fdfa;
-  --color-medrecord-100: #ccfbf1;
-  --color-medrecord-200: #99f6e4;
-  --color-medrecord-300: #5eead4;
-  --color-medrecord-400: #2dd4bf;
-  --color-medrecord-500: #14b8a6;
-  --color-medrecord-600: #0d9488;
-  --color-medrecord-700: #0f766e;
-  --color-medrecord-800: #115e59;
-  --color-medrecord-900: #134e4a;
-  --color-medrecord-950: #042f2e;
+  /* MEDrecord Official Brand Colors */
+  --color-deep-trust-blue: #2C5F9B;
+  --color-clear-sky-blue: #5DADE2;
+  --color-vital-teal: #4A9C8D;
+  --color-professional-gray: #6C757D;
+  --color-gold-accent: #F4B942;
+  --color-navy-dark: #1A3A5C;
 
   /* Semantic Colors */
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-primary: #0d9488;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
-  --color-accent: #14b8a6;
-  --color-accent-foreground: #ffffff;
-  --color-border: #e2e8f0;
-  --color-ring: #0d9488;
+  --color-background: #FAFBFC;
+  --color-foreground: #1A2B3C;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1A2B3C;
+  --color-primary: #2C5F9B;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #4A9C8D;
+  --color-secondary-foreground: #FFFFFF;
+  --color-muted: #F1F5F9;
+  --color-muted-foreground: #6C757D;
+  --color-accent: #5DADE2;
+  --color-accent-foreground: #1A3A5C;
+  --color-border: #E2E8F0;
+  --color-ring: #2C5F9B;
 
-  /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Typography - MEDrecord Brand Fonts */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Spacing */
@@ -48,5 +44,12 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
+  font-weight: 600;
 }
