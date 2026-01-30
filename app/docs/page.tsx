@@ -1,22 +1,16 @@
 'use client';
 
-// Custom Swagger UI - No external dependencies
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 
+// Types
 interface OpenAPISpec {
   openapi: string;
   info: {
     title: string;
     description: string;
     version: string;
-    contact?: { name?: string; email?: string; url?: string };
-    license?: { name: string; url?: string };
   };
   servers: Array<{ url: string; description: string }>;
   paths: Record<string, PathItem>;
@@ -42,7 +36,7 @@ interface Operation {
   operationId?: string;
   parameters?: Parameter[];
   requestBody?: RequestBody;
-  responses?: Record<string, Response>;
+  responses?: Record<string, ResponseObj>;
   security?: Array<Record<string, string[]>>;
 }
 
@@ -61,7 +55,7 @@ interface RequestBody {
   content?: Record<string, { schema?: SchemaObject; example?: unknown }>;
 }
 
-interface Response {
+interface ResponseObj {
   description: string;
   content?: Record<string, { schema?: SchemaObject; example?: unknown }>;
 }
@@ -158,7 +152,7 @@ export default function DocsPage() {
     });
   };
 
-  const initTryItOut = (operationId: string, operation: Operation, method: string, path: string) => {
+  const initTryItOut = (operationId: string, operation: Operation) => {
     const params: Record<string, string> = {};
     operation.parameters?.forEach((p) => {
       params[p.name] = p.example?.toString() || '';
@@ -189,7 +183,6 @@ export default function DocsPage() {
     const baseUrl = spec.servers[selectedServer]?.url || '';
     let url = path;
 
-    // Replace path parameters
     Object.entries(tryItOut.params).forEach(([key, value]) => {
       const param = operation.parameters?.find((p) => p.name === key);
       if (param?.in === 'path') {
@@ -197,7 +190,6 @@ export default function DocsPage() {
       }
     });
 
-    // Add query parameters
     const queryParams = new URLSearchParams();
     operation.parameters?.forEach((param) => {
       if (param.in === 'query' && tryItOut.params[param.name]) {
@@ -298,13 +290,16 @@ export default function DocsPage() {
   if (error || !spec) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <Card className="p-8 text-center">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
           <h2 className="text-xl font-bold text-red-600">Failed to load API documentation</h2>
           <p className="mt-2 text-slate-600">{error || 'Unknown error'}</p>
-          <Button onClick={() => window.location.reload()} className="mt-4">
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
+          >
             Retry
-          </Button>
-        </Card>
+          </button>
+        </div>
       </div>
     );
   }
@@ -332,12 +327,12 @@ export default function DocsPage() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="border-teal-200 bg-teal-50 text-teal-700">
+            <span className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
               OpenAPI 3.0
-            </Badge>
-            <Badge variant="outline" className="border-slate-200 text-slate-600">
+            </span>
+            <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600">
               v{spec.info.version}
-            </Badge>
+            </span>
             <Link
               href="/"
               className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
@@ -362,22 +357,22 @@ export default function DocsPage() {
             <div className="sticky top-24 space-y-6">
               {/* Search */}
               <div>
-                <Input
+                <input
                   type="search"
                   placeholder="Search endpoints..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                 />
               </div>
 
               {/* Server Selection */}
-              <Card className="p-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-2 text-sm font-semibold text-slate-900">Server</h3>
                 <select
                   value={selectedServer}
                   onChange={(e) => setSelectedServer(Number(e.target.value))}
-                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
                 >
                   {spec.servers.map((server, index) => (
                     <option key={index} value={index}>
@@ -386,23 +381,23 @@ export default function DocsPage() {
                   ))}
                 </select>
                 <p className="mt-2 truncate text-xs text-slate-500">{spec.servers[selectedServer]?.url}</p>
-              </Card>
+              </div>
 
               {/* Authorization */}
-              <Card className="p-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-2 text-sm font-semibold text-slate-900">Authorization</h3>
                 <label className="mb-1 block text-xs text-slate-500">X-Api-Key</label>
-                <Input
+                <input
                   type="password"
                   placeholder="Enter API key..."
                   value={authHeader}
                   onChange={(e) => setAuthHeader(e.target.value)}
-                  className="w-full"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                 />
-              </Card>
+              </div>
 
               {/* Navigation */}
-              <Card className="p-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <h3 className="mb-3 text-sm font-semibold text-slate-900">Resources</h3>
                 <nav className="space-y-1">
                   {allTags.map((tag) => (
@@ -415,14 +410,14 @@ export default function DocsPage() {
                     </a>
                   ))}
                 </nav>
-              </Card>
+              </div>
             </div>
           </aside>
 
           {/* Main Content */}
           <main className="col-span-9 space-y-8">
             {/* API Info */}
-            <Card className="p-6">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-bold text-slate-900">{spec.info.title}</h2>
               <div className="mt-4 prose prose-slate prose-sm max-w-none">
                 <div
@@ -430,14 +425,14 @@ export default function DocsPage() {
                     __html: spec.info.description
                       .replace(/\n\n/g, '</p><p>')
                       .replace(/\n/g, '<br/>')
-                      .replace(/`([^`]+)`/g, '<code>$1</code>')
+                      .replace(/`([^`]+)`/g, '<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs">$1</code>')
                       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
                       .replace(/### ([^\n]+)/g, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
                       .replace(/## ([^\n]+)/g, '<h2 class="text-xl font-semibold mt-6 mb-3">$1</h2>')
                   }}
                 />
               </div>
-            </Card>
+            </div>
 
             {/* Endpoints by Tag */}
             {allTags.map((tag) => {
@@ -459,7 +454,9 @@ export default function DocsPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant="secondary">{operations.length} endpoints</Badge>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                        {operations.length} endpoints
+                      </span>
                       <svg
                         className={`h-5 w-5 text-slate-400 transition-transform ${expandedTags.has(tag) ? 'rotate-180' : ''}`}
                         fill="none"
@@ -480,9 +477,9 @@ export default function DocsPage() {
                         const isTryingOut = tryItOut?.operationId === operationId;
 
                         return (
-                          <Card
+                          <div
                             key={operationId}
-                            className={`overflow-hidden border ${colors.border} ${colors.bg}`}
+                            className={`overflow-hidden rounded-xl border ${colors.border} ${colors.bg}`}
                           >
                             {/* Operation Header */}
                             <div
@@ -528,18 +525,14 @@ export default function DocsPage() {
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {operation.parameters.map((param, idx) => (
-                                            <tr key={idx} className="border-b border-slate-100">
+                                          {operation.parameters.map((param) => (
+                                            <tr key={param.name} className="border-b border-slate-100">
                                               <td className="py-2 pr-4">
-                                                <code className="text-teal-600">{param.name}</code>
-                                                {param.required && (
-                                                  <span className="ml-1 text-red-500">*</span>
-                                                )}
+                                                <code className="font-mono text-xs text-slate-800">{param.name}</code>
+                                                {param.required && <span className="ml-1 text-red-500">*</span>}
                                               </td>
-                                              <td className="py-2 pr-4 text-slate-500">{param.in}</td>
-                                              <td className="py-2 pr-4 text-slate-500">
-                                                {param.schema?.type || 'string'}
-                                              </td>
+                                              <td className="py-2 pr-4 text-slate-600">{param.in}</td>
+                                              <td className="py-2 pr-4 text-slate-600">{param.schema?.type || 'string'}</td>
                                               <td className="py-2 text-slate-600">{param.description}</td>
                                             </tr>
                                           ))}
@@ -553,16 +546,7 @@ export default function DocsPage() {
                                 {operation.requestBody && (
                                   <div className="mb-4">
                                     <h4 className="mb-2 text-sm font-semibold text-slate-900">Request Body</h4>
-                                    <p className="mb-2 text-sm text-slate-600">{operation.requestBody.description}</p>
-                                    {operation.requestBody.content?.['application/fhir+json']?.example && (
-                                      <pre className="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100">
-                                        {JSON.stringify(
-                                          operation.requestBody.content['application/fhir+json'].example,
-                                          null,
-                                          2
-                                        )}
-                                      </pre>
-                                    )}
+                                    <p className="text-sm text-slate-600">{operation.requestBody.description}</p>
                                   </div>
                                 )}
 
@@ -570,18 +554,17 @@ export default function DocsPage() {
                                 {operation.responses && (
                                   <div className="mb-4">
                                     <h4 className="mb-2 text-sm font-semibold text-slate-900">Responses</h4>
-                                    <div className="space-y-2">
+                                    <div className="space-y-1">
                                       {Object.entries(operation.responses).map(([code, response]) => (
-                                        <div
-                                          key={code}
-                                          className="flex items-start gap-3 rounded border border-slate-200 bg-slate-50 p-3"
-                                        >
-                                          <Badge
-                                            variant={code.startsWith('2') ? 'default' : 'destructive'}
-                                            className={code.startsWith('2') ? 'bg-emerald-600' : ''}
-                                          >
+                                        <div key={code} className="flex items-center gap-3">
+                                          <span className={`rounded px-2 py-0.5 text-xs font-medium ${
+                                            code.startsWith('2') ? 'bg-emerald-100 text-emerald-700' :
+                                            code.startsWith('4') ? 'bg-amber-100 text-amber-700' :
+                                            code.startsWith('5') ? 'bg-red-100 text-red-700' :
+                                            'bg-slate-100 text-slate-700'
+                                          }`}>
                                             {code}
-                                          </Badge>
+                                          </span>
                                           <span className="text-sm text-slate-600">{response.description}</span>
                                         </div>
                                       ))}
@@ -589,138 +572,116 @@ export default function DocsPage() {
                                   </div>
                                 )}
 
-                                {/* Try it out */}
-                                <div className="border-t border-slate-200 pt-4">
-                                  {!isTryingOut ? (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        initTryItOut(operationId, operation, method, path);
-                                      }}
-                                    >
-                                      Try it out
-                                    </Button>
-                                  ) : (
-                                    <div className="space-y-4">
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-slate-900">Try it out</h4>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setTryItOut(null);
-                                          }}
-                                        >
-                                          Cancel
-                                        </Button>
-                                      </div>
+                                {/* Try It Out Button */}
+                                <button
+                                  onClick={() => {
+                                    if (isTryingOut) {
+                                      setTryItOut(null);
+                                    } else {
+                                      initTryItOut(operationId, operation);
+                                    }
+                                  }}
+                                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                                    isTryingOut
+                                      ? 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                      : 'bg-teal-600 text-white hover:bg-teal-700'
+                                  }`}
+                                >
+                                  {isTryingOut ? 'Cancel' : 'Try it out'}
+                                </button>
 
-                                      {/* Parameter Inputs */}
-                                      {operation.parameters && operation.parameters.length > 0 && (
-                                        <div className="space-y-3">
-                                          {operation.parameters.map((param) => (
-                                            <div key={param.name}>
-                                              <label className="mb-1 block text-xs font-medium text-slate-700">
-                                                {param.name}
-                                                {param.required && <span className="text-red-500">*</span>}
-                                                <span className="ml-2 text-slate-400">({param.in})</span>
-                                              </label>
-                                              <Input
-                                                value={tryItOut.params[param.name] || ''}
-                                                onChange={(e) =>
-                                                  setTryItOut((prev) =>
-                                                    prev
-                                                      ? {
-                                                          ...prev,
-                                                          params: { ...prev.params, [param.name]: e.target.value },
-                                                        }
-                                                      : null
-                                                  )
-                                                }
-                                                placeholder={param.description || param.name}
-                                                className="font-mono text-sm"
-                                              />
-                                            </div>
-                                          ))}
-                                        </div>
-                                      )}
-
-                                      {/* Request Body Input */}
-                                      {operation.requestBody && (
-                                        <div>
-                                          <label className="mb-1 block text-xs font-medium text-slate-700">
-                                            Request Body
-                                          </label>
-                                          <textarea
-                                            value={tryItOut.body}
-                                            onChange={(e) =>
-                                              setTryItOut((prev) =>
-                                                prev ? { ...prev, body: e.target.value } : null
-                                              )
-                                            }
-                                            rows={10}
-                                            className="w-full rounded-md border border-slate-200 bg-slate-900 p-3 font-mono text-xs text-slate-100"
-                                          />
-                                        </div>
-                                      )}
-
-                                      {/* Execute Button */}
-                                      <Button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          executeTryItOut(method, path, operation);
-                                        }}
-                                        disabled={tryItOut.loading}
-                                        className="bg-teal-600 hover:bg-teal-700"
-                                      >
-                                        {tryItOut.loading ? 'Executing...' : 'Execute'}
-                                      </Button>
-
-                                      {/* Response */}
-                                      {tryItOut.response && (
-                                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                                          <div className="mb-2 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                              <Badge
-                                                variant={tryItOut.response.status >= 200 && tryItOut.response.status < 300 ? 'default' : 'destructive'}
-                                                className={tryItOut.response.status >= 200 && tryItOut.response.status < 300 ? 'bg-emerald-600' : ''}
-                                              >
-                                                {tryItOut.response.status || 'Error'}
-                                              </Badge>
-                                              <span className="text-xs text-slate-500">
-                                                {tryItOut.response.duration}ms
-                                              </span>
-                                            </div>
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => {
-                                                navigator.clipboard.writeText(
-                                                  JSON.stringify(tryItOut.response?.data, null, 2)
-                                                );
-                                              }}
-                                            >
-                                              Copy
-                                            </Button>
+                                {/* Try It Out Panel */}
+                                {isTryingOut && tryItOut && (
+                                  <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                    <h4 className="mb-4 text-sm font-semibold text-slate-900">Execute Request</h4>
+                                    
+                                    {/* Parameters Input */}
+                                    {operation.parameters && operation.parameters.length > 0 && (
+                                      <div className="mb-4 space-y-2">
+                                        {operation.parameters.map((param) => (
+                                          <div key={param.name} className="flex items-center gap-2">
+                                            <label className="w-32 text-sm text-slate-600">
+                                              {param.name}
+                                              {param.required && <span className="text-red-500">*</span>}
+                                            </label>
+                                            <input
+                                              type="text"
+                                              placeholder={param.description || param.name}
+                                              value={tryItOut.params[param.name] || ''}
+                                              onChange={(e) => setTryItOut(prev => prev ? {
+                                                ...prev,
+                                                params: { ...prev.params, [param.name]: e.target.value }
+                                              } : null)}
+                                              className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+                                            />
                                           </div>
-                                          {tryItOut.error ? (
-                                            <p className="text-sm text-red-600">{tryItOut.error}</p>
-                                          ) : (
-                                            <pre className="max-h-96 overflow-auto rounded bg-slate-900 p-3 text-xs text-slate-100">
-                                              {JSON.stringify(tryItOut.response.data, null, 2)}
-                                            </pre>
-                                          )}
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Request Body Input */}
+                                    {operation.requestBody && (
+                                      <div className="mb-4">
+                                        <label className="mb-1 block text-sm text-slate-600">Request Body</label>
+                                        <textarea
+                                          value={tryItOut.body}
+                                          onChange={(e) => setTryItOut(prev => prev ? { ...prev, body: e.target.value } : null)}
+                                          rows={10}
+                                          className="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm focus:border-teal-500 focus:outline-none"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* Execute Button */}
+                                    <button
+                                      onClick={() => executeTryItOut(method, path, operation)}
+                                      disabled={tryItOut.loading}
+                                      className="rounded-lg bg-teal-600 px-6 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                                    >
+                                      {tryItOut.loading ? 'Executing...' : 'Execute'}
+                                    </button>
+
+                                    {/* Response */}
+                                    {tryItOut.response && (
+                                      <div className="mt-4 rounded-lg border border-slate-200 bg-white overflow-hidden">
+                                        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2">
+                                          <div className="flex items-center gap-3">
+                                            <span className={`font-mono text-sm font-bold ${
+                                              tryItOut.response.status >= 200 && tryItOut.response.status < 300
+                                                ? 'text-emerald-600'
+                                                : tryItOut.response.status >= 400
+                                                ? 'text-red-600'
+                                                : 'text-amber-600'
+                                            }`}>
+                                              {tryItOut.response.status || 'Error'}
+                                            </span>
+                                            <span className="text-xs text-slate-500">{tryItOut.response.duration}ms</span>
+                                          </div>
+                                          <button
+                                            onClick={() => navigator.clipboard.writeText(JSON.stringify(tryItOut.response?.data, null, 2))}
+                                            className="text-xs text-slate-500 hover:text-slate-700"
+                                          >
+                                            Copy
+                                          </button>
                                         </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
+                                        <pre className="max-h-96 overflow-auto bg-slate-900 p-4 text-xs text-slate-100">
+                                          {typeof tryItOut.response.data === 'string'
+                                            ? tryItOut.response.data
+                                            : JSON.stringify(tryItOut.response.data, null, 2)}
+                                        </pre>
+                                      </div>
+                                    )}
+
+                                    {tryItOut.error && (
+                                      <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                                        {tryItOut.error}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             )}
-                          </Card>
+                          </div>
                         );
                       })}
                     </div>
@@ -728,38 +689,25 @@ export default function DocsPage() {
                 </section>
               );
             })}
-
-            {/* Schemas */}
-            {spec.components?.schemas && Object.keys(spec.components.schemas).length > 0 && (
-              <section id="schemas" className="scroll-mt-24">
-                <Card className="p-6">
-                  <h3 className="mb-4 text-lg font-semibold text-slate-900">Schemas</h3>
-                  <div className="space-y-4">
-                    {Object.entries(spec.components.schemas).map(([name, schema]) => (
-                      <div key={name} className="rounded-lg border border-slate-200 p-4">
-                        <h4 className="font-mono text-sm font-semibold text-teal-600">{name}</h4>
-                        {schema.description && (
-                          <p className="mt-1 text-sm text-slate-600">{schema.description}</p>
-                        )}
-                        {schema.example && (
-                          <details className="mt-3">
-                            <summary className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700">
-                              Example
-                            </summary>
-                            <pre className="mt-2 overflow-x-auto rounded bg-slate-900 p-3 text-xs text-slate-100">
-                              {JSON.stringify(schema.example, null, 2)}
-                            </pre>
-                          </details>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </section>
-            )}
           </main>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-16 border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <Image
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Made%20with%20love%20by%20medrecord-LvlIAdbWKzYd3vigrDO4juFuCZ5qhX.png"
+              alt="Made with love by MEDrecord"
+              width={300}
+              height={50}
+              className="h-10 w-auto"
+            />
+            <p className="text-sm text-slate-500">FHIR Version 4.0.1 | nl-core 2024</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
