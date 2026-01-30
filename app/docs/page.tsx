@@ -104,6 +104,129 @@ const METHOD_BADGE_COLORS: Record<string, string> = {
   patch: 'bg-purple-600',
 };
 
+// Simple Markdown renderer for API descriptions
+function MarkdownRenderer({ content }: { content: string }) {
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let currentList: string[] = [];
+  let listKey = 0;
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      elements.push(
+        <ul key={`list-${listKey++}`} className="my-3 ml-4 list-disc space-y-1 text-slate-600">
+          {currentList.map((item, i) => (
+            <li key={i} className="text-sm">
+              <InlineMarkdown text={item} />
+            </li>
+          ))}
+        </ul>
+      );
+      currentList = [];
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Headers
+    if (line.startsWith('### ')) {
+      flushList();
+      elements.push(
+        <h3 key={i} className="mt-5 mb-2 text-base font-semibold text-slate-900">
+          {line.slice(4)}
+        </h3>
+      );
+    } else if (line.startsWith('## ')) {
+      flushList();
+      elements.push(
+        <h2 key={i} className="mt-6 mb-3 text-lg font-semibold text-slate-900">
+          {line.slice(3)}
+        </h2>
+      );
+    }
+    // List items
+    else if (line.match(/^- /)) {
+      currentList.push(line.slice(2));
+    }
+    // Empty lines
+    else if (line.trim() === '') {
+      flushList();
+      // Don't add anything for empty lines
+    }
+    // Regular paragraphs
+    else {
+      flushList();
+      elements.push(
+        <p key={i} className="my-2 text-sm text-slate-600">
+          <InlineMarkdown text={line} />
+        </p>
+      );
+    }
+  }
+  
+  flushList();
+  return <div className="space-y-1">{elements}</div>;
+}
+
+// Inline markdown (bold, code, links)
+function InlineMarkdown({ text }: { text: string }) {
+  // Process inline markdown patterns
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    // Check for code blocks first
+    const codeMatch = remaining.match(/^`([^`]+)`/);
+    if (codeMatch) {
+      parts.push(
+        <code key={key++} className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-800">
+          {codeMatch[1]}
+        </code>
+      );
+      remaining = remaining.slice(codeMatch[0].length);
+      continue;
+    }
+
+    // Check for bold
+    const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
+    if (boldMatch) {
+      parts.push(<strong key={key++} className="font-semibold text-slate-800">{boldMatch[1]}</strong>);
+      remaining = remaining.slice(boldMatch[0].length);
+      continue;
+    }
+
+    // Check for links
+    const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+    if (linkMatch) {
+      parts.push(
+        <a key={key++} href={linkMatch[2]} className="text-teal-600 hover:underline" target="_blank" rel="noopener noreferrer">
+          {linkMatch[1]}
+        </a>
+      );
+      remaining = remaining.slice(linkMatch[0].length);
+      continue;
+    }
+
+    // Find next special character
+    const nextSpecial = remaining.search(/[`*\[]/);
+    if (nextSpecial === -1) {
+      parts.push(remaining);
+      break;
+    } else if (nextSpecial === 0) {
+      // No match but starts with special char, treat as regular text
+      parts.push(remaining[0]);
+      remaining = remaining.slice(1);
+    } else {
+      parts.push(remaining.slice(0, nextSpecial));
+      remaining = remaining.slice(nextSpecial);
+    }
+  }
+
+  return <>{parts}</>;
+}
+
 export default function DocsPage() {
   const [spec, setSpec] = useState<OpenAPISpec | null>(null);
   const [loading, setLoading] = useState(true);
@@ -419,18 +542,8 @@ export default function DocsPage() {
             {/* API Info */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-bold text-slate-900">{spec.info.title}</h2>
-              <div className="mt-4 prose prose-slate prose-sm max-w-none">
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: spec.info.description
-                      .replace(/\n\n/g, '</p><p>')
-                      .replace(/\n/g, '<br/>')
-                      .replace(/`([^`]+)`/g, '<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs">$1</code>')
-                      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                      .replace(/### ([^\n]+)/g, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
-                      .replace(/## ([^\n]+)/g, '<h2 class="text-xl font-semibold mt-6 mb-3">$1</h2>')
-                  }}
-                />
+              <div className="mt-4">
+                <MarkdownRenderer content={spec.info.description} />
               </div>
             </div>
 
