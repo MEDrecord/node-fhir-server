@@ -15,7 +15,8 @@ import { NL_CORE_PROFILES, DUTCH_CODE_SYSTEMS } from '@/lib/fhir/types';
  * Transform database row to FHIR Patient resource
  */
 function toFhirPatient(row: DatabasePatient): FhirPatient {
-  const patient: FhirPatient = {
+  return {
+    ...(row.resource as Omit<FhirPatient, 'resourceType' | 'id' | 'meta'>),
     resourceType: 'Patient',
     id: row.resource_id,
     meta: {
@@ -23,10 +24,7 @@ function toFhirPatient(row: DatabasePatient): FhirPatient {
       lastUpdated: row.last_updated,
       profile: [NL_CORE_PROFILES.Patient],
     },
-    ...row.resource,
   };
-
-  return patient;
 }
 
 /**

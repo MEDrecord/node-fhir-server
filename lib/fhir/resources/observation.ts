@@ -63,8 +63,9 @@ function getProfileForCode(code: string | null): string {
  * Transform database row to FHIR Observation resource
  */
 function toFhirObservation(row: DatabaseObservation): FhirObservation {
+  const { status: _status, ...resourceWithoutStatus } = row.resource as FhirObservation;
   return {
-    ...row.resource,
+    ...resourceWithoutStatus,
     resourceType: 'Observation',
     id: row.resource_id,
     meta: {
