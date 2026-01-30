@@ -1,65 +1,29 @@
 {
-  "name": "node-fhir-server-core-project",
+  "name": "medrecord-fhir-server",
   "private": true,
-  "version": "2.1.0",
-  "description": "Node FHIR Rest API Server and surrounding ecosystem",
-  "homepage": "https://github.com/bluehalo/node-fhir-server-core#readme",
-  "bugs": {
-    "url": "https://github.com/bluehalo/node-fhir-server-core/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bluehalo/node-fhir-server-core.git"
-  },
+  "version": "1.0.0",
+  "description": "MEDrecord FHIR R4 Server with Dutch ZIB profiles",
   "license": "MIT",
-  "author": "Bluehalo",
-  "contributors": [
-    "Robert Winterbottom <rwinterbottom@asymmetrik.com>",
-    "Jon Lee <jlee@asymmetrik.com>",
-    "Sumeet Shah <sshah@asymmetrik.com>",
-    "Shane O'Neill <soneill@asymmetrik.com>"
-  ],
-  "main": "src/index",
   "scripts": {
-    "lerna": "lerna",
-    "test": "lerna run test",
-    "prettier-check": "prettier --check \"**/*.{js,mjs,cjs,jsx,json,ts,tsx,md,mdx,css,html,yml,yaml,scss,less,graphql,graphqls,gql}\"",
-    "prettier-fix": "prettier --write \"**/*.{js,mjs,cjs,jsx,json,ts,tsx,md,mdx,css,html,yml,yaml,scss,less,graphql,graphqls,gql}\"",
-    "lint": "run-p prettier-check lint-eslint",
-    "lint-staged": "lint-staged",
-    "lint-eslint": "eslint . '**/*.{js,jsx,ts,tsx}'"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "vercel-build": "next build"
   },
-  "jest": {
-    "clearMocks": true,
-    "collectCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/src/server/resources/"
-    ],
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "json"
-    ],
-    "verbose": true
-  },
-  "devDependencies": {
-    "eslint": "^9.9",
-    "eslint-config-prettier": "^9.1.0",
-    "globals": "^15.9.0",
-    "jest-cli": "^29.7.0",
-    "lerna": "^8.1.8",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.3.3",
-    "yarn-audit-fix": "^10.0.7"
-  },
-  "engines": {
-    "node": ">=10.13.0"
-  },
-  "workspaces": [
-    "./packages/*"
-  ],
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
-    "next": "^16.1.6"
+    "next": "^16.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
