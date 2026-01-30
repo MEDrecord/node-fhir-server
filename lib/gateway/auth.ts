@@ -137,36 +137,4 @@ export function hasScope(
   return false;
 }
 
-/**
- * Get SMART on FHIR scopes for user role
- */
-export function getScopesForRole(role: GatewayUser['role']): string[] {
-  const scopeMap: Record<GatewayUser['role'], string[]> = {
-    super_admin: ['system/*.*'],
-    tenant_admin: ['system/*.*'],
-    practitioner: [
-      'user/Patient.read',
-      'user/Observation.*',
-      'user/Condition.*',
-      'user/AllergyIntolerance.*',
-      'user/MedicationRequest.*',
-      'user/Encounter.*',
-    ],
-    patient: [
-      'patient/Patient.read',
-      'patient/Observation.read',
-      'patient/Condition.read',
-      'patient/AllergyIntolerance.read',
-      'patient/MedicationRequest.read',
-    ],
-    researcher: [
-      'user/Observation.read',
-      'user/Condition.read',
-    ],
-    dev: [
-      'system/*.read',
-    ],
-  };
 
-  return scopeMap[role] || [];
-}

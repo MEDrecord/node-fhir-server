@@ -136,49 +136,19 @@ export async function handleFhirRequest(
 }
 
 /**
- * Parse FHIR search parameters
+ * Parse FHIR search parameters from URL
  */
 export function parseSearchParams(searchParams: URLSearchParams): Record<string, string | string[]> {
   const params: Record<string, string | string[]> = {};
 
   searchParams.forEach((value, key) => {
-    // Handle modifiers (e.g., name:exact, date:lt)
     const existing = params[key];
     if (existing) {
-      if (Array.isArray(existing)) {
-        existing.push(value);
-      } else {
-        params[key] = [existing, value];
-      }
+      params[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
     } else {
       params[key] = value;
     }
   });
 
   return params;
-}
-
-/**
- * Build pagination links for FHIR bundle
- */
-export function buildPaginationLinks(
-  baseUrl: string,
-  offset: number,
-  count: number,
-  total: number
-): { relation: string; url: string }[] {
-  const links: { relation: string; url: string }[] = [
-    { relation: 'self', url: `${baseUrl}&_offset=${offset}&_count=${count}` },
-  ];
-
-  if (offset > 0) {
-    const prevOffset = Math.max(0, offset - count);
-    links.push({ relation: 'previous', url: `${baseUrl}&_offset=${prevOffset}&_count=${count}` });
-  }
-
-  if (offset + count < total) {
-    links.push({ relation: 'next', url: `${baseUrl}&_offset=${offset + count}&_count=${count}` });
-  }
-
-  return links;
 }

@@ -141,19 +141,6 @@ export function buildSelfUrl(
 }
 
 /**
- * Build a resource URL
- */
-export function buildResourceUrl(
-  request: Request,
-  version: string,
-  resourceType: string,
-  id: string
-): string {
-  const url = new URL(request.url);
-  return `${url.origin}/api/fhir/${version}/${resourceType}/${id}`;
-}
-
-/**
  * Add versioning headers for resource responses
  */
 export function withVersionHeaders(
@@ -175,15 +162,5 @@ export function createdResponse(
 ): NextResponse {
   return fhirResponse(resource, 201, {
     Location: location,
-  });
-}
-
-/**
- * No Content response (204)
- */
-export function noContentResponse(): NextResponse {
-  return new NextResponse(null, {
-    status: 204,
-    headers: FHIR_HEADERS,
   });
 }

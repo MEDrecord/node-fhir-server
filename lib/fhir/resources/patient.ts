@@ -6,7 +6,6 @@ import {
   createdResponse,
   FhirErrors,
   buildSelfUrl,
-  buildResourceUrl,
   withVersionHeaders,
 } from '@/lib/fhir/response';
 import type { FhirPatient, GatewayUser } from '@/lib/fhir/types';
@@ -32,13 +31,13 @@ function toFhirPatient(row: DatabasePatient): FhirPatient {
 
 /**
  * Transform FHIR Patient to database row
+ * Note: BSN is hashed for storage security
  */
 function fromFhirPatient(
   patient: FhirPatient,
   tenantId: string,
   existingId?: string
 ): Partial<DatabasePatient> {
-  // Extract searchable fields from FHIR resource
   const bsn = patient.identifier?.find(
     (id) => id.system === DUTCH_CODE_SYSTEMS.BSN
   )?.value;
@@ -48,26 +47,41 @@ function fromFhirPatient(
   return {
     resource_id: existingId || patient.id || crypto.randomUUID(),
     tenant_id: tenantId,
-    bsn: bsn || null,
+    bsn_hash: bsn ? hashBsn(bsn) : null,
     family_name: officialName?.family || null,
     given_name: officialName?.given?.join(' ') || null,
     birth_date: patient.birthDate || null,
     gender: patient.gender || null,
-    deceased: patient.deceasedBoolean || !!patient.deceasedDateTime || false,
+    deceased_boolean: patient.deceasedBoolean || !!patient.deceasedDateTime || false,
+    active: patient.active ?? true,
     resource: patient,
   };
+}
+
+/**
+ * Hash BSN for secure storage (simple hash - use bcrypt in production)
+ */
+function hashBsn(bsn: string): string {
+  let hash = 0;
+  for (let i = 0; i < bsn.length; i++) {
+    const char = bsn.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return `bsn_${Math.abs(hash).toString(16)}`;
 }
 
 interface DatabasePatient {
   id: string;
   tenant_id: string;
   resource_id: string;
-  bsn: string | null;
+  bsn_hash: string | null;
   family_name: string | null;
   given_name: string | null;
   birth_date: string | null;
   gender: string | null;
-  deceased: boolean;
+  deceased_boolean: boolean;
+  active: boolean;
   resource: Omit<FhirPatient, 'resourceType' | 'id' | 'meta'>;
   version_id: number;
   last_updated: string;
@@ -96,19 +110,18 @@ async function searchPatients(args: SearchArgs, user: GatewayUser) {
   }
 
   if (params.identifier) {
-    // Handle BSN search
     const identifierValue = Array.isArray(params.identifier)
       ? params.identifier[0]
       : params.identifier;
     
-    // Parse system|value format
+    // Parse system|value format and search by hashed BSN
     if (identifierValue.includes('|')) {
       const [system, value] = identifierValue.split('|');
       if (system === DUTCH_CODE_SYSTEMS.BSN || system === '') {
-        query = query.eq('bsn', value);
+        query = query.eq('bsn_hash', hashBsn(value));
       }
     } else {
-      query = query.eq('bsn', identifierValue);
+      query = query.eq('bsn_hash', hashBsn(identifierValue));
     }
   }
 
