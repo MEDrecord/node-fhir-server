@@ -148,7 +148,7 @@ export default function Home() {
               View Capability Statement
             </Link>
             <Link
-              href="/admin"
+              href="/upload"
               className="rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50"
             >
               Upload Test Data
