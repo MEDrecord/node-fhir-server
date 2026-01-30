@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 type UploadResult = {
   success: boolean;
@@ -210,8 +207,8 @@ export default function AdminPage() {
               <p className="text-xs text-slate-500">FHIR Admin</p>
             </div>
           </Link>
-          <Link href="/">
-            <Button variant="outline">Back to API Docs</Button>
+          <Link href="/" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            Back to API Docs
           </Link>
         </div>
       </header>
@@ -226,12 +223,15 @@ export default function AdminPage() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Input */}
-          <Card className="p-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-semibold text-slate-900">FHIR JSON Input</h3>
-              <Button variant="outline" size="sm" onClick={loadSampleData}>
+              <button 
+                onClick={loadSampleData}
+                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
                 Load Sample Data
-              </Button>
+              </button>
             </div>
             <textarea
               className="h-96 w-full rounded-lg border border-slate-300 p-4 font-mono text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
@@ -239,17 +239,17 @@ export default function AdminPage() {
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
             />
-            <Button 
-              className="mt-4 w-full bg-teal-600 hover:bg-teal-700" 
+            <button 
+              className="mt-4 w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50" 
               onClick={handleUpload}
               disabled={loading || !jsonInput.trim()}
             >
               {loading ? 'Uploading...' : 'Upload Resources'}
-            </Button>
-          </Card>
+            </button>
+          </div>
 
           {/* Results */}
-          <Card className="p-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="mb-4 font-semibold text-slate-900">Upload Results</h3>
             {results.length === 0 ? (
               <div className="flex h-96 items-center justify-center text-slate-400">
@@ -267,9 +267,13 @@ export default function AdminPage() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Badge variant={result.success ? 'default' : 'destructive'}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        result.success 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-red-100 text-red-700'
+                      }`}>
                         {result.success ? 'Created' : 'Failed'}
-                      </Badge>
+                      </span>
                       {result.resourceType && (
                         <span className="font-medium text-slate-700">
                           {result.resourceType}
@@ -287,7 +291,7 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
-          </Card>
+          </div>
         </div>
 
         {/* Quick Links */}

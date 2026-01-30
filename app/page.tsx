@@ -140,21 +140,20 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Badge>Dutch ZIB Compliant</Badge>
+            <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-700">Dutch ZIB Compliant</span>
             <Link
-  href="/api/fhir/4_0_1/metadata"
-  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
-  >
-  View Capability Statement
-  </Link>
-  <Link
-  href="/admin"
-  className="rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50"
-  >
-  Upload Test Data
-  </Link>
-  </div>
-  </div>
+              href="/api/fhir/4_0_1/metadata"
+              className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
+            >
+              View Capability Statement
+            </Link>
+            <Link
+              href="/admin"
+              className="rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50"
+            >
+              Upload Test Data
+            </Link>
+          </div>
         </div>
       </header>
 
