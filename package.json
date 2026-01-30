@@ -11,8 +11,7 @@
     "@supabase/supabase-js": "^2.49.4",
     "next": "15.1.0",
     "react": "^19",
-    "react-dom": "^19",
-    "swagger-ui-react": "^5.17.14"
+    "react-dom": "^19"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
