@@ -29,6 +29,8 @@ function ResourceCard({
   description: string;
   endpoints: string[];
 }) {
+  const apiUrl = `/api/fhir/4_0_1/${name}`;
+  
   return (
     <Card className="p-5 transition-all hover:shadow-md hover:border-teal-200">
       <div className="flex items-start justify-between">
@@ -41,6 +43,15 @@ function ResourceCard({
       <div className="mt-3">
         <p className="text-xs font-medium text-slate-500">Dutch ZIB Profile</p>
         <p className="mt-0.5 font-mono text-xs text-teal-700">{profile}</p>
+      </div>
+      <div className="mt-3">
+        <p className="text-xs font-medium text-slate-500">Endpoint</p>
+        <Link 
+          href={apiUrl}
+          className="mt-0.5 font-mono text-xs text-blue-600 hover:text-blue-800 hover:underline block"
+        >
+          {apiUrl}
+        </Link>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {endpoints.map((method) => (
