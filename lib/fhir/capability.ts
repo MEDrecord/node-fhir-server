@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { FhirCapabilityStatement } from './types';
+import type { FhirCapabilityStatement, FhirCapabilityStatementResource } from './types';
 import { FHIR_VERSION, NL_CORE_PROFILES } from './types';
 import { fhirResponse } from './response';
 import { getSupportedResources } from './router';
@@ -98,10 +98,10 @@ export function getCapabilityStatement(
 /**
  * Get capability information for each supported resource
  */
-function getResourceCapabilities(): FhirCapabilityStatement['rest'][0]['resource'] {
+function getResourceCapabilities(): FhirCapabilityStatementResource[] {
   const supportedResources = getSupportedResources();
   
-  const resourceCapabilities: FhirCapabilityStatement['rest'][0]['resource'] = [];
+  const resourceCapabilities: FhirCapabilityStatementResource[] = [];
 
   // Patient
   if (supportedResources.includes('Patient')) {
