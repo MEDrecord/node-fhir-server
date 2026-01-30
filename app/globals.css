@@ -1,55 +1,7 @@
 @import "tailwindcss";
 
-@theme inline {
-  /* MEDrecord Official Brand Colors */
-  --color-deep-trust-blue: #2C5F9B;
-  --color-clear-sky-blue: #5DADE2;
-  --color-vital-teal: #4A9C8D;
-  --color-professional-gray: #6C757D;
-  --color-gold-accent: #F4B942;
-  --color-navy-dark: #1A3A5C;
-
-  /* Semantic Colors */
-  --color-background: #FAFBFC;
-  --color-foreground: #1A2B3C;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1A2B3C;
-  --color-primary: #2C5F9B;
-  --color-primary-foreground: #FFFFFF;
-  --color-secondary: #4A9C8D;
-  --color-secondary-foreground: #FFFFFF;
-  --color-muted: #F1F5F9;
-  --color-muted-foreground: #6C757D;
-  --color-accent: #5DADE2;
-  --color-accent-foreground: #1A3A5C;
-  --color-border: #E2E8F0;
-  --color-ring: #2C5F9B;
-
-  /* Typography - MEDrecord Brand Fonts */
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-
-  /* Spacing */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-}
-
-* {
-  border-color: var(--color-border);
-}
-
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-body);
+  font-family: ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sans);
-  font-weight: 600;
 }
